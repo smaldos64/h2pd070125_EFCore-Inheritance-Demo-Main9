@@ -74,159 +74,52 @@ namespace InheritanceStrategyDemoEFCore5.Controllers
             return Ok(car);
         }
 
-        //[HttpPost("create-car")]
-        //public async Task<IActionResult> CreateCar([FromBody] TPTCar car)
-        //{
-        //    await _context.TPTCars.AddAsync(car);
-        //    await _context.SaveChangesAsync();
-        //    return StatusCode(201);
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCar(int id, [FromBody] TPTCar car)
+        {
+            if (id != car.Id)
+            {
+                return BadRequest();
+            }
 
-        //[HttpPost("create-car-model")]
-        //public async Task<IActionResult> CreateCarModel([FromBody] TPTCarModel carModel)
-        //{
-        //    await _context.TPTCarModels.AddAsync(carModel);
-        //    await _context.SaveChangesAsync();
-        //    return StatusCode(201);
-        //}
+            _context.Entry(car).State = EntityState.Modified;
 
-        //[HttpPut("update-car")]
-        //public async Task<IActionResult> UpdateCar(int id, [FromBody] TPTCar car)
-        //{
-        //    if (id != car.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    var carFromDatabase = await _context.TPTCars.FindAsync(id);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.TPTCars.Any(e => e.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-        //    if (null == carFromDatabase)
-        //    {
-        //        return NotFound();
-        //    }
+            return NoContent();
+        }
 
-        //    carFromDatabase.carPrice = car.carPrice;
-        //    carFromDatabase.carYear = car.carYear;
-        //    carFromDatabase.carName = car.carName;
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCar(long id)
+        {
+            // Find objektet ved hjælp af basisklassen
+            var car = await _context.TPTCars.FindAsync(id);
 
-        //    _context.TPTCars.Update(carFromDatabase);
-        //    await _context.SaveChangesAsync();
-        //    return StatusCode(201);
-        //}
+            if (car == null)
+            {
+                return NotFound();
+            }
 
-        //[HttpPut("update-carModel")]
-        //public async Task<IActionResult> UpdateCarModel(int id, [FromBody] TPTCarModel carModel)
-        //{
-        //    if (id != carModel.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    var carModelFromDatabase = await _context.TPTCarModels.FindAsync(id);
+            // Fjern objektet. EF Core ved, hvilken type det er, og
+            // håndterer sletningen af de relevante tabeller.
+            _context.TPTCars.Remove(car);
+            await _context.SaveChangesAsync();
 
-        //    if (null == carModelFromDatabase)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    carModelFromDatabase.carPrice = carModel.carPrice;
-        //    carModelFromDatabase.carYear = carModel.carYear;
-        //    carModelFromDatabase.carName = carModel.carName;
-        //    carModelFromDatabase.carModel = carModel.carModel;
-
-        //    _context.TPTCars.Update(carModelFromDatabase);
-        //    await _context.SaveChangesAsync();
-        //    return StatusCode(201);
-        //}
-
-        //[Route("get-cars")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetCars()
-        //{
-        //    var cars = await _context.TPTCars.ToListAsync();
-        //    return Ok(cars);
-        //}
-
-        //[Route("get-carModels")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetCarModels()
-        //{
-        //    var carModels = await _context.TPTCarModels.ToListAsync();
-        //    return Ok(carModels);
-        //}
-
-        //[Route("get-car/{id}")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetCar(long id)
-        //{
-        //    var car = await _context.TPTCars.FindAsync(id);
-
-        //    if (null == car)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(car);
-        //}
-
-        //[Route("get-carModel/{id}")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetCarModel(long id)
-        //{
-        //    var carModel = await _context.TPTCarModels.FindAsync(id);
-
-        //    if (null == carModel)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(carModel);
-        //}
-
-        //[HttpDelete("delete-car/{id}")]
-        //public async Task<IActionResult> DeleteCar(long id)
-        //{
-        //    TPTCar tPTCar = await _context.FindAsync<TPTCar>(id);
-
-        //    if (null == tPTCar)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Remove<TPTCar>(tPTCar);
-        //    _context.SaveChanges();
-
-        //    return NoContent();
-        //}
-
-        //[HttpDelete("delete-carModel/{id}")]
-        //public async Task<IActionResult> DeleteCarModel(long id)
-        //{
-        //    TPTCarModel tPTCarModel = await _context.FindAsync<TPTCarModel>(id);
-
-        //    if (null == tPTCarModel)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Remove<TPTCarModel>(tPTCarModel);
-        //    _context.SaveChanges();
-
-        //    return NoContent();
-        //}
-
-        //[HttpDelete("delete-tpt-user/{id}")]
-        //public async Task<IActionResult> DeleteTPTUser(int id)
-        //{
-        //    TPTUser tptUser = await _context.FindAsync<TPTUser>(id);
-
-        //    if (null == tptUser)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Remove<TPTUser>(tptUser);
-        //    _context.SaveChanges();
-
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
     }
 }
