@@ -21,6 +21,8 @@ namespace EFCore_Inheritance_Demo_Main9.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Hvis ikke linjen herunder er med, vil EntityFramework anvende TPH =>
+            // Table Per Hierachy metoden => kun én tabel.
             modelBuilder.Entity<TPTCar>().UseTptMappingStrategy();
             modelBuilder.Entity<TPTCarModel>(); // EF Core vil automatisk opdage, at denne nedarver fra Car
         }

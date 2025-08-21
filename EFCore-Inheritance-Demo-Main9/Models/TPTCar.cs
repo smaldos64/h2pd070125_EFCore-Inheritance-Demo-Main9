@@ -3,6 +3,7 @@
 namespace EFCore_Inheritance_Demo_Main9.Models
 {
     [JsonDerivedType(typeof(TPTCar), "car")]
+    [JsonDerivedType(typeof(TPTCarModel), "carModel")]
     public class TPTCar
     {
         public long Id { get; set; }
