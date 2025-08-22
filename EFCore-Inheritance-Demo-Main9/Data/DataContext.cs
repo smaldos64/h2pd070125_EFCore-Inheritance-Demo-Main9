@@ -18,6 +18,7 @@ namespace EFCore_Inheritance_Demo_Main9.Data
         //    modelBuilder.Entity<TPTCarModel>().ToTable("TPTCarModels");
 
         //}
+        public DbSet<LogInfo> LogInfoes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

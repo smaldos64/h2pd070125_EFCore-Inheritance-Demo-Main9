@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using NLog.Web;
 using EFCore_Inheritance_Demo_Main9.Data;
 using EFCore_Inheritance_Demo_Main9.Hubs;
+using Microsoft.AspNetCore.SignalR;
+
 
 namespace EFCore_Inheritance_Demo_Main9
 {
