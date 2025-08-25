@@ -116,22 +116,39 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
             await _context.SaveChangesAsync();
 
             _logger.LogInformation($"[{userName}] Tilføjede {logStringAdder} med ID: {car.carId}.");
+            
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", userName, "added");
 
             return Ok(car);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCar(int id, [FromBody] TPTCar car, string userName = "Default User")
+        public async Task<IActionResult> UpdateCar(long id, [FromBody] TPTCar car, string userName = "Default User")
         {
-            string logStringAdder;
-
             if (id != car.carId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(car).State = EntityState.Modified;
+            var existingCar = await _context.TPTCars.FindAsync(id);
+            if (existingCar == null)
+            {
+                return NotFound();
+            }
+
+            // Tjek om typen ændres (f.eks. fra Car til CarModel)
+            if (existingCar.GetType() != car.GetType())
+            {
+                // Hvis typen er forskellig, slet det gamle objekt og tilføj det nye
+                _context.TPTCars.Remove(existingCar);
+                _context.TPTCars.Add(car);
+            }
+            else
+            {
+                // Hvis typen er den samme, opdatér det eksisterende objekt
+                _context.Entry(existingCar).CurrentValues.SetValues(car);
+                _context.Entry(existingCar).State = EntityState.Modified;
+            }
 
             try
             {
@@ -149,17 +166,7 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
                 }
             }
 
-            if (car is TPTCarModel carModel)
-            {
-                // Denne blok vil kun blive eksekveret, hvis JSON-dataene
-                // blev deserialiseret til et CarModel-objekt
-                logStringAdder = "CarModel";
-            }
-            else
-            {
-                logStringAdder = "Car";
-            }
-
+            string logStringAdder = (car is TPTCarModel) ? "CarModel" : "Car";
             LogInfo LogInfoObject = new LogInfo();
             LogInfoObject.LogInfoUserName = userName;
             LogInfoObject.LogInfoDescription = $"{logStringAdder} med Id: {car.carId} ændret af {userName}";
@@ -171,6 +178,57 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
 
             return NoContent();
         }
+
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateCar(long id, [FromBody] TPTCar car, string userName = "Default User")
+        //{
+        //    string logStringAdder;
+
+        //    if (id != car.carId)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    _context.Entry(car).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!_context.TPTCars.Any(e => e.carId == id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    if (car is TPTCarModel carModel)
+        //    {
+        //        // Denne blok vil kun blive eksekveret, hvis JSON-dataene
+        //        // blev deserialiseret til et CarModel-objekt
+        //        logStringAdder = "CarModel";
+        //    }
+        //    else
+        //    {
+        //        logStringAdder = "Car";
+        //    }
+
+        //    LogInfo LogInfoObject = new LogInfo();
+        //    LogInfoObject.LogInfoUserName = userName;
+        //    LogInfoObject.LogInfoDescription = $"{logStringAdder} med Id: {car.carId} ændret af {userName}";
+        //    _context.LogInfoes.Add(LogInfoObject);
+        //    await _context.SaveChangesAsync();
+
+        //    _logger.LogInformation($"[{userName}] Opdaterede {logStringAdder} med ID: {car.carId}.");
+        //    await _hubContext.Clients.All.SendAsync("ReceiveMessage", userName, "updated");
+
+        //    return NoContent();
+        //}
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCar(long id, string userName = "Default User")

@@ -18,9 +18,9 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
 
         public LogInfoController(DataContext context, ILogger<LogInfoController> logger, IHubContext<TodoHub> hubContext)
         {
-            _context = context;
-            _logger = logger;
-            _hubContext = hubContext;
+            this._context = context;
+            this._logger = logger;
+            this._hubContext = hubContext;
         }
 
         // GET: api/GetLogInfoItems?userName=...
