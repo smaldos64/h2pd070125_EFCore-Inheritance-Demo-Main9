@@ -16,7 +16,15 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
     [Route("api/[controller]")]
     public class CarsMetadataController : ControllerBase
     {
-        [HttpGet("hierarchy")]
+        private DataContext _context;
+
+        public CarsMetadataController(DataContext context)
+        {
+            this._context = context;
+        }
+
+        //[HttpGet("hierarchy")]
+        [HttpGet]
         public IActionResult GetHierarchyMetadata()
         {
             var baseType = typeof(TPTCar);
