@@ -49,10 +49,7 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
         public async Task<IActionResult> GetCarById(long id, string userName)
         {
             var car = await _context.TPTCars.FindAsync(id);
-            //var car = await _context.TPTCars
-            //.OfType<TPTCarModel>() // Inkluderer CarModel-typen
-            //.SingleOrDefaultAsync(c => c.Id == id);
-
+            
             if (car == null) 
             {
                 return NotFound();
@@ -83,17 +80,6 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
             {
                 return BadRequest();
             }
-
-            //if (car is TPTCarModel carModel)
-            //{
-            //    // Denne blok vil kun blive eksekveret, hvis JSON-dataene
-            //    // blev deserialiseret til et CarModel-objekt
-            //    _context.TPTCars.Add(carModel);
-            //}
-            //else
-            //{
-            //    _context.TPTCars.Add(car);
-            //}
 
             if (car is TPTCarModel carModel)
             {
