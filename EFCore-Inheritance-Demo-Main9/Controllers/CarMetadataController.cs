@@ -88,7 +88,7 @@ namespace EFCore_Inheritance_Demo_Main9.Controllers
         private string GetJavaScriptType(Type type)
         {
             if (type == typeof(string)) return "string";
-            if (type == typeof(int) || type == typeof(double) || type == typeof(decimal)) return "number";
+            if (type == typeof(int) || type == typeof(long) || type == typeof(double) || type == typeof(decimal)) return "number";
             if (type == typeof(bool)) return "boolean";
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
